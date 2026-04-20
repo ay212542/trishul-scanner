@@ -9,7 +9,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from trishul.core.models import SEVERITY_COLORS, ScanResult
+from trishul.core.models import ScanResult
 
 
 class HTMLReporter:

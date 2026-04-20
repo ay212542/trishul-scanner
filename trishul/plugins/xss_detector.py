@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import re
 from typing import Dict, List
-from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
+from urllib.parse import parse_qs, urlparse
 
 from trishul.core.models import Finding, Severity
 from trishul.plugins.base import BasePlugin
