@@ -16,7 +16,7 @@ setup(
     url="https://github.com/trishul-scanner/trishul",
     packages=find_packages(exclude=["tests*"]),
     package_data={
-        "trishul": ["../templates/*.j2"],
+        "trishul": ["templates/*.j2"],
     },
     include_package_data=True,
     python_requires=">=3.10",

@@ -5,7 +5,7 @@ Fingerprints server, framework, CDN, CMS from headers and HTML.
 from __future__ import annotations
 
 import re
-from typing import Dict, Optional
+from typing import Dict
 
 from trishul.core.http_client import HTTPClient
 from trishul.core.models import TechInfo

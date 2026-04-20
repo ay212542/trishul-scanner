@@ -18,7 +18,7 @@ class HTMLReporter:
     def __init__(self) -> None:
         # Find template directory relative to this file
         template_dir = os.path.join(
-            os.path.dirname(__file__), "..", "..", "templates"
+            os.path.dirname(__file__), "..", "templates"
         )
         template_dir = os.path.abspath(template_dir)
         self.env = Environment(

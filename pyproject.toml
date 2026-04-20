@@ -48,4 +48,4 @@ where = ["."]
 include = ["trishul*"]
 
 [tool.setuptools.package-data]
-"*" = ["templates/*.j2"]
+trishul = ["templates/*.j2"]

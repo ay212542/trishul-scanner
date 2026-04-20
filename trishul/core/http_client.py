@@ -9,7 +9,7 @@ import time
 from typing import Any, Dict, Optional, Tuple
 
 import aiohttp
-from aiohttp import ClientResponse, ClientSession, ClientTimeout, TCPConnector
+from aiohttp import ClientSession, ClientTimeout, TCPConnector
 
 
 class TokenBucketRateLimiter:

@@ -4,7 +4,7 @@ Renders scan results to the terminal with color-coded severity badges.
 """
 from __future__ import annotations
 
-from typing import Optional
+
 
 from rich.console import Console
 from rich.panel import Panel
@@ -14,10 +14,8 @@ from rich.text import Text
 
 from trishul.core.models import (
     SEVERITY_COLORS,
-    SEVERITY_ORDER,
     Finding,
     ScanResult,
-    Severity,
 )
 
 SEVERITY_EMOJI = {

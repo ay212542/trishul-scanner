@@ -12,7 +12,7 @@ from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn
 
 from trishul.core.http_client import HTTPClient
-from trishul.core.models import ScanConfig, ScanResult, Finding, Severity
+from trishul.core.models import ScanConfig, ScanResult, Finding
 
 console = Console()
 
