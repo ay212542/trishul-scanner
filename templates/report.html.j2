@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TRISHUL Scan Report — {{ result.target_url }}</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #21262d;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-dim: #8b949e;
+      --cyan: #58a6ff;
+      --green: #3fb950;
+      --critical: #ff3b3b;
+      --high: #ff8c00;
+      --medium: #ffd700;
+      --low: #00bfff;
+      --info: #888;
+      --radius: 10px;
+      --font: 'Segoe UI', system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────────────────── */
+    .header {
+      background: linear-gradient(135deg, #0d1117 0%, #1c2333 50%, #0d1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 40px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: 4px;
+      background: linear-gradient(90deg, #58a6ff, #3fb950);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .logo span { font-size: 0.6rem; color: var(--text-dim); display: block; letter-spacing: 2px; margin-top: 2px; -webkit-text-fill-color: var(--text-dim); }
+    .header-meta { text-align: right; color: var(--text-dim); font-size: 0.85rem; }
+    .header-meta strong { color: var(--cyan); display: block; font-size: 1rem; margin-bottom: 4px; }
+
+    /* ── Container ──────────────────────────────────── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 60px; }
+
+    /* ── Disclaimer ─────────────────────────────────── */
+    .disclaimer {
+      background: rgba(255, 140, 0, 0.08);
+      border: 1px solid rgba(255, 140, 0, 0.3);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      margin-bottom: 32px;
+      font-size: 0.82rem;
+      color: #ff8c00;
+    }
+    .disclaimer strong { font-size: 0.9rem; }
+
+    /* ── Summary cards ──────────────────────────────── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .sev-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    .sev-card:hover { transform: translateY(-2px); }
+    .sev-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .sev-card.CRITICAL::before { background: var(--critical); }
+    .sev-card.HIGH::before { background: var(--high); }
+    .sev-card.MEDIUM::before { background: var(--medium); }
+    .sev-card.LOW::before { background: var(--low); }
+    .sev-card.INFO::before { background: var(--info); }
+
+    .sev-card .count {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .sev-card.CRITICAL .count { color: var(--critical); }
+    .sev-card.HIGH .count { color: var(--high); }
+    .sev-card.MEDIUM .count { color: var(--medium); }
+    .sev-card.LOW .count { color: var(--low); }
+    .sev-card.INFO .count { color: var(--info); }
+    .sev-card .label { font-size: 0.7rem; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; }
+
+    /* ── Info grid ──────────────────────────────────── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .info-card h3 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--cyan);
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+    .info-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(48,54,61,0.5); font-size: 0.88rem; }
+    .info-row:last-child { border-bottom: none; }
+    .info-row .key { color: var(--text-dim); }
+    .info-row .val { color: var(--text); max-width: 60%; text-align: right; word-break: break-all; }
+    .val.green { color: var(--green); }
+    .val.red { color: var(--critical); }
+    .val.orange { color: var(--high); }
+
+    /* ── Section title ──────────────────────────────── */
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Findings ───────────────────────────────────── */
+    .findings { margin-bottom: 48px; }
+    .finding-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+    .finding-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+
+    .finding-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .sev-badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .sev-badge.CRITICAL { background: rgba(255,59,59,0.15); color: var(--critical); border: 1px solid rgba(255,59,59,0.3); }
+    .sev-badge.HIGH { background: rgba(255,140,0,0.15); color: var(--high); border: 1px solid rgba(255,140,0,0.3); }
+    .sev-badge.MEDIUM { background: rgba(255,215,0,0.12); color: var(--medium); border: 1px solid rgba(255,215,0,0.3); }
+    .sev-badge.LOW { background: rgba(0,191,255,0.12); color: var(--low); border: 1px solid rgba(0,191,255,0.3); }
+    .sev-badge.INFO { background: rgba(136,136,136,0.12); color: var(--info); border: 1px solid rgba(136,136,136,0.3); }
+
+    .finding-title { font-weight: 600; font-size: 0.95rem; flex: 1; }
+    .finding-module { font-size: 0.75rem; color: var(--text-dim); }
+    .toggle-icon { color: var(--text-dim); font-size: 0.85rem; transition: transform 0.2s; }
+    .finding-card.open .toggle-icon { transform: rotate(180deg); }
+
+    .finding-body {
+      display: none;
+      padding: 0 20px 20px;
+      border-top: 1px solid var(--border);
+      margin-top: 0;
+    }
+    .finding-card.open .finding-body { display: block; }
+
+    .detail-row { display: flex; gap: 12px; margin-top: 14px; font-size: 0.87rem; }
+    .detail-label { color: var(--text-dim); min-width: 110px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.8px; padding-top: 2px; }
+    .detail-value { color: var(--text); word-break: break-word; }
+    .detail-value.url { color: var(--cyan); font-family: monospace; font-size: 0.83rem; }
+    .detail-value.evidence {
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+      background: var(--bg);
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .detail-value.remediation { color: #3fb950; }
+    .cwe-tag { background: rgba(88,166,255,0.1); border: 1px solid rgba(88,166,255,0.2); color: var(--cyan); font-size: 0.72rem; padding: 2px 8px; border-radius: 12px; }
+
+    /* ── Ports table ────────────────────────────────── */
+    .ports-table {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+    .ports-table table { width: 100%; border-collapse: collapse; }
+    .ports-table th {
+      background: var(--surface2);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border);
+    }
+    .ports-table td {
+      padding: 10px 16px;
+      font-size: 0.88rem;
+      border-bottom: 1px solid rgba(48,54,61,0.5);
+      color: var(--text);
+    }
+    .ports-table tr:last-child td { border-bottom: none; }
+    .port-num { color: var(--cyan); font-family: monospace; font-weight: 600; }
+
+    /* ── URLs section ───────────────────────────────── */
+    .urls-list {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 40px;
+    }
+    .url-item { font-family: monospace; font-size: 0.82rem; color: var(--cyan); padding: 4px 0; border-bottom: 1px solid rgba(48,54,61,0.3); }
+    .url-item:last-child { border-bottom: none; }
+
+    /* ── Footer ─────────────────────────────────────── */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 60px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+    }
+    .footer a { color: var(--cyan); text-decoration: none; }
+
+    /* ── Responsive ─────────────────────────────────── */
+    @media (max-width: 900px) {
+      .header, .container, .footer { padding: 24px 20px; }
+      .summary-grid { grid-template-columns: repeat(3, 1fr); }
+      .info-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .summary-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────── -->
+<header class="header">
+  <div>
+    <div class="logo">TRISHUL<span>Advanced Web Vulnerability Scanner</span></div>
+  </div>
+  <div class="header-meta">
+    <strong>{{ result.target_url }}</strong>
+    <div>Started: {{ result.scan_start[:19] }}</div>
+    {% if result.scan_end %}<div>Ended: {{ result.scan_end[:19] }}</div>{% endif %}
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ── Disclaimer ─────────────────────────────────── -->
+  <div class="disclaimer">
+    ⚠ <strong>LEGAL DISCLAIMER:</strong>
+    This report was generated by TRISHUL Scanner for <strong>authorized security assessment only</strong>.
+    Unauthorized use of this tool against systems you do not own or have explicit permission to test is illegal and unethical.
+  </div>
+
+  <!-- ── Summary ────────────────────────────────────── -->
+  <div class="section-title">📊 Findings Summary</div>
+  <div class="summary-grid">
+    {% for sev in ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO'] %}
+    <div class="sev-card {{ sev }}">
+      <div class="count">{{ summary[sev] }}</div>
+      <div class="label">{{ sev }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- ── Info Grid ──────────────────────────────────── -->
+  <div class="info-grid">
+    <!-- Tech Info -->
+    {% if result.tech_info %}
+    <div class="info-card">
+      <h3>🔍 Technology Stack</h3>
+      {% set tech = result.tech_info %}
+      {% if tech.server %}<div class="info-row"><span class="key">Server</span><span class="val">{{ tech.server }}</span></div>{% endif %}
+      {% if tech.framework %}<div class="info-row"><span class="key">Framework</span><span class="val">{{ tech.framework }}</span></div>{% endif %}
+      {% if tech.cms %}<div class="info-row"><span class="key">CMS</span><span class="val">{{ tech.cms }}</span></div>{% endif %}
+      {% if tech.cdn %}<div class="info-row"><span class="key">CDN</span><span class="val">{{ tech.cdn }}</span></div>{% endif %}
+      {% if tech.language %}<div class="info-row"><span class="key">Language</span><span class="val">{{ tech.language }}</span></div>{% endif %}
+      {% for k, v in tech.extras.items() %}<div class="info-row"><span class="key">{{ k }}</span><span class="val">{{ v }}</span></div>{% endfor %}
+      {% if not tech.server and not tech.framework and not tech.cms %}
+      <div class="info-row"><span class="key">Status</span><span class="val orange">Could not detect</span></div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- SSL Info -->
+    {% if result.ssl_info %}
+    <div class="info-card">
+      <h3>🔒 SSL/TLS Certificate</h3>
+      {% set ssl = result.ssl_info %}
+      <div class="info-row"><span class="key">Valid</span>
+        <span class="val {% if ssl.valid %}green{% else %}red{% endif %}">{% if ssl.valid %}✔ Yes{% else %}✘ No{% endif %}</span>
+      </div>
+      <div class="info-row"><span class="key">Protocol</span><span class="val">{{ ssl.protocol or 'Unknown' }}</span></div>
+      <div class="info-row"><span class="key">Issuer</span><span class="val">{{ ssl.issuer }}</span></div>
+      <div class="info-row"><span class="key">Subject</span><span class="val">{{ ssl.subject }}</span></div>
+      {% if ssl.days_to_expiry is not none %}
+      <div class="info-row"><span class="key">Expires In</span>
+        <span class="val {% if ssl.days_to_expiry <= 30 %}red{% else %}green{% endif %}">{{ ssl.days_to_expiry }} days</span>
+      </div>
+      {% endif %}
+      <div class="info-row"><span class="key">Self-Signed</span>
+        <span class="val {% if ssl.self_signed %}red{% else %}green{% endif %}">{% if ssl.self_signed %}Yes{% else %}No{% endif %}</span>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ── Open Ports ─────────────────────────────────── -->
+  {% if result.open_ports %}
+  <div class="section-title">🔌 Open Ports ({{ result.open_ports|length }})</div>
+  <div class="ports-table">
+    <table>
+      <thead><tr><th>Port</th><th>Service</th></tr></thead>
+      <tbody>
+        {% for port in result.open_ports %}
+        <tr>
+          <td><span class="port-num">{{ port.port }}</span></td>
+          <td>{{ port.service or 'Unknown' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- ── Findings ───────────────────────────────────── -->
+  <div class="section-title">⚠ Vulnerability Findings ({{ findings|length }})</div>
+  <div class="findings">
+    {% if not findings %}
+    <div style="text-align:center;padding:40px;color:var(--text-dim);">✅ No vulnerability findings detected.</div>
+    {% else %}
+    {% for finding in findings %}
+    <div class="finding-card" onclick="this.classList.toggle('open')">
+      <div class="finding-header">
+        <span class="sev-badge {{ finding.severity.value }}">{{ finding.severity.value }}</span>
+        <span class="finding-title">{{ finding.title }}</span>
+        <span class="finding-module">{{ finding.module }}</span>
+        {% if finding.cwe %}<span class="cwe-tag">{{ finding.cwe }}</span>{% endif %}
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="finding-body">
+        <div class="detail-row">
+          <span class="detail-label">URL</span>
+          <span class="detail-value url">{{ finding.url }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Description</span>
+          <span class="detail-value">{{ finding.description }}</span>
+        </div>
+        {% if finding.evidence %}
+        <div class="detail-row">
+          <span class="detail-label">Evidence</span>
+          <span class="detail-value evidence">{{ finding.evidence }}</span>
+        </div>
+        {% endif %}
+        {% if finding.remediation %}
+        <div class="detail-row">
+          <span class="detail-label">Remediation</span>
+          <span class="detail-value remediation">{{ finding.remediation }}</span>
+        </div>
+        {% endif %}
+        {% if finding.cvss %}
+        <div class="detail-row">
+          <span class="detail-label">CVSS Score</span>
+          <span class="detail-value">{{ finding.cvss }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+  </div>
+
+  <!-- ── Crawled URLs ───────────────────────────────── -->
+  {% if result.crawled_urls %}
+  <div class="section-title">🌐 Crawled URLs ({{ result.crawled_urls|length }})</div>
+  <div class="urls-list">
+    {% for u in result.crawled_urls %}
+    <div class="url-item">{{ u }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- ── Errors ─────────────────────────────────────── -->
+  {% if result.errors %}
+  <div class="section-title" style="color:var(--critical)">⛔ Scan Errors</div>
+  <div class="ports-table">
+    <table>
+      <tbody>
+        {% for err in result.errors %}
+        <tr><td style="color:var(--critical)">{{ err }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
+
+<!-- ── Footer ─────────────────────────────────────── -->
+<footer class="footer">
+  Generated by <strong>TRISHUL Scanner v1.0.0</strong> — Open Source Web Security Tool |
+  <a href="https://github.com/trishul-scanner" target="_blank">GitHub</a> |
+  For authorized security testing only
+</footer>
+
+</body>
+</html>

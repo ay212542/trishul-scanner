@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "trishul-scanner"
+version = "1.0.0"
+description = "Advanced modular open-source web vulnerability scanner"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+    { name = "TRISHUL Project" }
+]
+keywords = ["security", "scanner", "vulnerability", "web", "pentest", "cybersecurity"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+    "Topic :: Internet :: WWW/HTTP",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "aiohttp>=3.9.0",
+    "rich>=13.7.0",
+    "click>=8.1.0",
+    "jinja2>=3.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/YOUR_USERNAME/trishul-scanner"
+Repository = "https://github.com/YOUR_USERNAME/trishul-scanner"
+"Bug Reports" = "https://github.com/YOUR_USERNAME/trishul-scanner/issues"
+Changelog = "https://github.com/YOUR_USERNAME/trishul-scanner/blob/main/CHANGELOG.md"
+
+[project.scripts]
+trishul = "trishul.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["trishul*"]
+
+[tool.setuptools.package-data]
+"*" = ["templates/*.j2"]

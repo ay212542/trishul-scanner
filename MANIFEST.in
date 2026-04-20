@@ -1,0 +1,5 @@
+recursive-include templates *
+recursive-include trishul *.py
+include README.md
+include DISCLAIMER.md
+include requirements.txt

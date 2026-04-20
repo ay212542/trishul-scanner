@@ -1,0 +1,172 @@
+{
+  "target_url": "http://testphp.vulnweb.com",
+  "scan_start": "2025-04-20T18:00:00.000000",
+  "scan_end": "2025-04-20T18:03:42.000000",
+  "summary": {
+    "CRITICAL": 1,
+    "HIGH": 4,
+    "MEDIUM": 3,
+    "LOW": 2,
+    "INFO": 5
+  },
+  "findings": [
+    {
+      "title": "HTTPS Not Used",
+      "severity": "CRITICAL",
+      "url": "http://testphp.vulnweb.com",
+      "description": "The target is accessible over plain HTTP without TLS encryption.",
+      "evidence": "URL scheme: http",
+      "module": "ssl_analyzer",
+      "remediation": "Enforce HTTPS by redirecting all HTTP traffic to HTTPS. Obtain a free certificate from Let's Encrypt.",
+      "cwe": "CWE-319",
+      "cvss": 0.0
+    },
+    {
+      "title": "Missing Header: Content-Security-Policy",
+      "severity": "HIGH",
+      "url": "http://testphp.vulnweb.com",
+      "description": "Missing Content-Security-Policy (CSP) header. Allows XSS and data injection attacks.",
+      "evidence": "Header 'Content-Security-Policy' not present in HTTP response.",
+      "module": "header_analyzer",
+      "remediation": "Add a strict CSP: Content-Security-Policy: default-src 'self'; ...",
+      "cwe": "CWE-693",
+      "cvss": 0.0
+    },
+    {
+      "title": "Missing Header: Strict-Transport-Security",
+      "severity": "HIGH",
+      "url": "http://testphp.vulnweb.com",
+      "description": "Missing HTTP Strict Transport Security (HSTS). Allows downgrade attacks.",
+      "evidence": "Header 'Strict-Transport-Security' not present in HTTP response.",
+      "module": "header_analyzer",
+      "remediation": "Add: Strict-Transport-Security: max-age=31536000; includeSubDomains; preload",
+      "cwe": "CWE-523",
+      "cvss": 0.0
+    },
+    {
+      "title": "Sensitive Path Exposed: /.git/HEAD",
+      "severity": "HIGH",
+      "url": "http://testphp.vulnweb.com/.git/HEAD",
+      "description": "The path '/.git/HEAD' returned HTTP 200 with 23 bytes. This may expose sensitive data.",
+      "evidence": "Status: 200 | Content-Length: 23 | Preview: 'ref: refs/heads/master'",
+      "module": "fuzz_engine",
+      "remediation": "Restrict access to '/.git/' via web server configuration or remove the exposed directory.",
+      "cwe": "",
+      "cvss": 0.0
+    },
+    {
+      "title": "SQL Error Disclosure (MySQL)",
+      "severity": "HIGH",
+      "url": "http://testphp.vulnweb.com/listproducts.php?cat=1",
+      "description": "The server returned a MySQL SQL error message in the response.",
+      "evidence": "Error pattern: 'You have an error in your SQL syntax'",
+      "module": "plugin:sqli_detector",
+      "remediation": "Use parameterized queries / prepared statements. Never expose raw database errors to users.",
+      "cwe": "CWE-89",
+      "cvss": 8.5
+    },
+    {
+      "title": "Missing Header: X-Frame-Options",
+      "severity": "MEDIUM",
+      "url": "http://testphp.vulnweb.com",
+      "description": "Missing X-Frame-Options. Page can be embedded in iframes (clickjacking risk).",
+      "evidence": "Header 'X-Frame-Options' not present in HTTP response.",
+      "module": "header_analyzer",
+      "remediation": "Add: X-Frame-Options: SAMEORIGIN",
+      "cwe": "CWE-1021",
+      "cvss": 0.0
+    },
+    {
+      "title": "Missing Header: X-Content-Type-Options",
+      "severity": "MEDIUM",
+      "url": "http://testphp.vulnweb.com",
+      "description": "Missing X-Content-Type-Options. Browser may MIME-sniff responses.",
+      "evidence": "Header 'X-Content-Type-Options' not present in HTTP response.",
+      "module": "header_analyzer",
+      "remediation": "Add: X-Content-Type-Options: nosniff",
+      "cwe": "CWE-693",
+      "cvss": 0.0
+    },
+    {
+      "title": "Potential Reflected XSS",
+      "severity": "MEDIUM",
+      "url": "http://testphp.vulnweb.com/search.php?test=hello",
+      "description": "Parameter 'test' value is reflected in the HTML response without apparent encoding.",
+      "evidence": "Param: test=hello | Reflected in response body | Status: 200",
+      "module": "plugin:xss_detector",
+      "remediation": "Encode all user-supplied input before reflecting it in HTML. Implement a strict CSP.",
+      "cwe": "CWE-79",
+      "cvss": 6.1
+    },
+    {
+      "title": "Missing Header: Referrer-Policy",
+      "severity": "LOW",
+      "url": "http://testphp.vulnweb.com",
+      "description": "Missing Referrer-Policy. Sensitive URL data may leak to third parties.",
+      "evidence": "Header 'Referrer-Policy' not present in HTTP response.",
+      "module": "header_analyzer",
+      "remediation": "Add: Referrer-Policy: strict-origin-when-cross-origin",
+      "cwe": "CWE-601",
+      "cvss": 0.0
+    },
+    {
+      "title": "Missing Header: Permissions-Policy",
+      "severity": "LOW",
+      "url": "http://testphp.vulnweb.com",
+      "description": "Missing Permissions-Policy. Browser features not restricted.",
+      "evidence": "Header 'Permissions-Policy' not present in HTTP response.",
+      "module": "header_analyzer",
+      "remediation": "Add: Permissions-Policy: geolocation=(), camera=(), microphone=()",
+      "cwe": "CWE-693",
+      "cvss": 0.0
+    },
+    {
+      "title": "Information Disclosure: Server",
+      "severity": "INFO",
+      "url": "http://testphp.vulnweb.com",
+      "description": "Server header discloses technology version information.",
+      "evidence": "Server: nginx/1.19.0",
+      "module": "header_analyzer",
+      "remediation": "Remove or mask the 'Server' header in your web server config.",
+      "cwe": "",
+      "cvss": 0.0
+    },
+    {
+      "title": "Open Port: 80/HTTP",
+      "severity": "INFO",
+      "url": "http://testphp.vulnweb.com",
+      "description": "Port 80 (HTTP) is accessible.",
+      "evidence": "",
+      "module": "port_scanner",
+      "remediation": "",
+      "cwe": "",
+      "cvss": 0.0
+    }
+  ],
+  "crawled_urls": [
+    "http://testphp.vulnweb.com",
+    "http://testphp.vulnweb.com/index.php",
+    "http://testphp.vulnweb.com/categories.php",
+    "http://testphp.vulnweb.com/artists.php",
+    "http://testphp.vulnweb.com/search.php",
+    "http://testphp.vulnweb.com/signup.php",
+    "http://testphp.vulnweb.com/login.php",
+    "http://testphp.vulnweb.com/cart.php",
+    "http://testphp.vulnweb.com/guestbook.php",
+    "http://testphp.vulnweb.com/AJAX/index.php"
+  ],
+  "open_ports": [
+    { "port": 80, "is_open": true, "service": "HTTP", "banner": "" },
+    { "port": 443, "is_open": false, "service": "HTTPS", "banner": "" }
+  ],
+  "ssl_info": null,
+  "tech_info": {
+    "server": "Nginx",
+    "framework": "",
+    "cdn": "",
+    "language": "PHP",
+    "cms": "WordPress",
+    "extras": { "x-powered-by": "PHP/5.6.40" }
+  },
+  "errors": []
+}
