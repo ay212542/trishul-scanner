@@ -5,6 +5,12 @@ import asyncio
 import sys
 import os
 
+# Force UTF-8 output so Unicode characters (✔, ✅) work on Windows CI (cp1252 default)
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 # Allow running from project root
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
