@@ -3,7 +3,6 @@ TRISHUL Scanner — Scan Engine (Orchestrator)
 """
 from __future__ import annotations
 
-import asyncio
 from datetime import datetime
 from typing import List
 from urllib.parse import urlparse

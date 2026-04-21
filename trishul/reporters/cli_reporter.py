@@ -4,8 +4,6 @@ Renders scan results to the terminal with color-coded severity badges.
 """
 from __future__ import annotations
 
-
-
 from rich.console import Console
 from rich.panel import Panel
 from rich.rule import Rule
@@ -14,7 +12,6 @@ from rich.text import Text
 
 from trishul.core.models import (
     SEVERITY_COLORS,
-    Finding,
     ScanResult,
 )
 
@@ -157,7 +154,6 @@ class CLIReporter:
             sev_color = SEVERITY_COLORS.get(finding.severity.value, "white")
             emoji = SEVERITY_EMOJI.get(finding.severity.value, "•")
 
-            sev_badge = f"[{sev_color}][{finding.severity.value}][/{sev_color}]"
             title_line = Text()
             title_line.append(f"{i}. {emoji} ", style="bold")
             title_line.append(f"[{finding.severity.value}] ", style=sev_color + " bold")

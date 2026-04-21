@@ -99,7 +99,7 @@ class HTTPClient:
                     body = await resp.read()
                     resp_headers = dict(resp.headers)
                     return resp.status, resp_headers, body, str(resp.url)
-            except (aiohttp.ClientError, asyncio.TimeoutError) as exc:
+            except (aiohttp.ClientError, asyncio.TimeoutError):
                 if attempt < self.retries - 1:
                     await asyncio.sleep(2 ** attempt)
                 else:

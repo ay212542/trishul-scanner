@@ -65,7 +65,6 @@ class XSSDetectorPlugin(BasePlugin):
                 if value and len(value) > 2 and value in body_text:
                     # Param is reflected — may be XSS-able
                     # Check if reflection is inside a dangerous context
-                    escaped_value = re.escape(value)
                     # Check for unescaped reflection (no HTML encoding)
                     if value in body_text and "&lt;" not in body_text:
                         findings.append(
